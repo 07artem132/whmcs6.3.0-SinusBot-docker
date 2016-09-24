@@ -17,3 +17,6 @@
 email: a_ivanko@service-voice.com
 Возможна любая дороботка/костомизация модуля под Ваши требования за отдельную плату.
 Данный модуль тестировался только на whmcs  версии 6.3.0
+
+Данный модуль распростроняется по лицензии:   [Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
