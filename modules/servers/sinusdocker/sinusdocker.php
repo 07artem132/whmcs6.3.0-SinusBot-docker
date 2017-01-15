@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
@@ -6,6 +6,9 @@ if (!defined("WHMCS")) {
 
 
 require_once(__DIR__ . '/lib/shipyard.php');
+require_once(__DIR__ . '/lib/database.php');
+
+use sinusdocker\helpers\database as DBhelper;
 
 /**
  * Основные данные о модуле
@@ -46,7 +49,7 @@ function sinusdocker_ConfigOptions() {
         'images' => array(
             'Type' => 'text',
             'Size' => '120',
-            'Default' => 'images docker sinusbot',
+            'Default' => '07artem132/sinusbot:0.9.16-10f0fad',
             'Description' => '<br>Максимум 120 символов',
         ), 'HTTP proto' => array(
             'Type' => 'dropdown',
@@ -81,12 +84,19 @@ function sinusdocker_ConfigOptions() {
  */
 function sinusdocker_CreateAccount(array $params) {
     try {
+		 if (!DBhelper::Product_custom_fields_exists($params['pid'], 'port'))
+            DBhelper::Product_custom_fields_text_add($params['pid'], 'port');
+
+        if (!DBhelper::Product_custom_fields_exists($params['pid'], 'id container'))
+            DBhelper::Product_custom_fields_text_add($params['pid'], 'id container');
+		
         $serviceid = $params['serviceid'];
         $template = $params['configoption1'];
         $prefix = $params['configoption3'];
         $pause = $params['configoption4'];
         $url = $params['serverhttpprefix'] . '://' . $params['serverhostname'] . ':' . $params['serverport'];
         $repasswd = "/(?>33m)(.*)(?=\\[)/";
+		$repasswdDEF = "/(?>\')(.*)(\'<?)/U";
         $serverusername = $params['serverusername'];
         $serverpassword = $params['serverpassword'];
 
@@ -103,9 +113,12 @@ function sinusdocker_CreateAccount(array $params) {
         sleep($pause);
         //получаем лог для извлечения пароля 
         $rawdata = $shipyard->containerslogs($idcontainer, $serverusername, $token, $url);
-
+	
         //Получаем пароль из лога
-        preg_match($repasswd, $rawdata, $matches); // passwd sinusbot:  $matches[1]
+        if(!preg_match($repasswd, $rawdata, $matches))
+			preg_match_all($repasswdDEF, $rawdata, $matches);
+		
+		// passwd sinusbot:  $matches[1]
         // получаем информацию о контейнере
         $data = $shipyard->containersjson($idcontainer, $serverusername, $token, $url);
 
@@ -113,8 +126,13 @@ function sinusdocker_CreateAccount(array $params) {
         // мы преобразуем обьект в масив
         $data = get_object_vars($data->NetworkSettings->Ports);
         $HostPort = $data['8087/tcp']['0']->HostPort;
-
-
+		
+		logModuleCall('TeamSpeak_3', __CLASS__ . '->' . __FUNCTION__, NULL, NULL, $rawdata, null);
+		logModuleCall('TeamSpeak_3', __CLASS__ . '->' . __FUNCTION__, NULL, NULL, $$matches, null);
+		
+		$passwd = $matches[1];
+		if(empty($passwd))
+			throw new Exception('При парсинге лога не был найден пароль, попробуйте увеличить задержку в настройках модуля (услуги)');
         // обновляем информацию
         $command = "updateclientproduct";
         $values["serviceid"] = $params['serviceid'];
@@ -123,7 +141,7 @@ function sinusdocker_CreateAccount(array $params) {
         $values["domain"] = $params['configoption2'] . '://' . $params['serverhostname'] . ':' . $HostPort . '/';
         $values["customfields"] = base64_encode(serialize(array("port" => $HostPort, "id container" => "$idcontainer")));
 
-        $results = localAPI($command, $values);
+        $results = localAPI($command, $values,1);
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
@@ -210,7 +228,7 @@ function sinusdocker_UnsuspendAccount(array $params) {
         $values["domain"] = $params['configoption2'] . '://' . $params['serverhostname'] . ':' . $HostPort . '/';
         $values["customfields"] = base64_encode(serialize(array("port" => $HostPort)));
 
-        $results = localAPI($command, $values);
+        $results = localAPI($command, $values,1);
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
