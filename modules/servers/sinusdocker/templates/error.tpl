@@ -1,9 +1,9 @@
-<h2>Oops! Something went wrong.</h2>
+<h2>{$LANG.sinusdocker_error}</h2>
 
 <div class="alert alert-danger">
-    <p>Extra template variables work here too: {$usefulErrorHelper}</p>
+    <p>{$LANG.sinusdocker_error_message} {$usefulErrorHelper}</p>
 </div>
 
-<p>Please go back and try again.</p>
+<p>{$LANG.sinusdocker_go_back_and_try_again}</p>
 
-<p>If the problem persists, please contact support.</p>
+<p>{$LANG.sinusdocker_please_contact_support}</p>

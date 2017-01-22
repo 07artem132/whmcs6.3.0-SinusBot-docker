@@ -1,18 +1,14 @@
-<h2>Музыкальный бот SinusBot</h2>
+<h2> {$LANG.sinusdocker_musicbot} SinusBot</h2>
 
-<p>SinusBot - многофункциональный радио бот для сервера Teamspeak 3 сервера</p>
+<p>SinusBot - {$LANG.sinusdocker_musicbot_description}</p>
 
 <div class="alert alert-info">
-  Для настройки SinusBot используйте данные предоставленные ниже
+    {$LANG.sinusdocker_for_setting_data} 
 </div>
 
 <h3>{$LANG.clientareaproductdetails}</h3>
 
 <hr>
-
-
-
-  
 
 {if $dedicatedip}
     <div class="row">
@@ -92,62 +88,65 @@
         {$billingcycle}
     </div>
 </div>
-        
-{if $status eq "Активный"}
+
 <div class="row">
     <div class="col-sm-5">
         {$LANG.clientareastatus}
     </div>
     <div class="col-sm-7">
-        
-            <span style="padding:2px 10px;background-color:#5bb75b;color:#fff;font-weight:bold;">Активный</span>
+        <span class="label status status-{$rawstatus|strtolower}" style="width: 90px;">{$status}</span>
     </div>
 </div>
+
+{if $status eq {$LANG.clientareaactive}} 
+    <hr>
+    <h3>{$LANG.sinusdocker_data_for_a_control_panel}</h3>
+    <hr>
+    <div class="row">
+        <div class="col-sm-5">
+            {$LANG.sinusdocker_link_control_panel}
+        </div>
+        <div class="col-sm-7">
+            <a href="{$domain}"> {$domain}</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5">
+            {$LANG.sinusdocker_login}
+        </div>
+        <div class="col-sm-7">
+            {$username}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-5">
+            {$LANG.sinusdocker_passwd}
+        </div>
+        <div class="col-sm-7">
+            {$password}
+        </div>
+    </div> 
+
+    <br><br>
+    <hr>
+    <h3>{$LANG.sinusdocker_log_bot}</h3>
+    <hr>
+
+    <textarea style="display: block;margin: 0 auto;font-size: 11px;" rows="10" cols="140" name="text" disabled> {$logs}</textarea>
 {/if}
 
-<hr>
-<h3>Данные для доступа к панели управления</h3>
-
-<hr>
-{if $status eq "Активный"} 
-<div class="row">
-    <div class="col-sm-5">
-       Ссылка на панель управления:
-    </div>
-    <div class="col-sm-7">
-        <a href="{$domain}"> {$domain}</a>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-5">
-       Логин:
-    </div>
-    <div class="col-sm-7">
-         {$username}
-    </div>
-</div>
-    
-    <div class="row">
-    <div class="col-sm-5">
-       Пароль:
-    </div>
-    <div class="col-sm-7">
-      {$password}
-    </div>
-</div> 
-{elseif $status eq "Удален"} 
+{if $status eq {$LANG.clientareaterminated}} 
+    <br><br>
     <span style="padding:2px 10px;background-color:#cc0000;color:#fff;text-align: center;display: block;margin: 0 auto;width: 149px;height: 100%;">
-        <strong>услуга удалена</strong>
-    </span> {/if}
-    {if $status eq "Приостановлен"} 
-         <span style="padding:2px 10px;background-color:#cc0000;color:#fff;text-align: center;display: block;margin: 0 auto;width: 400px;height: 100%;">
-        <strong>услуга заблокирована</strong><br/>
-     <strong>   {$LANG.suspendreason}: {$suspendreason}</strong>
-    </span> {/if}
-<br><br>
-<hr>
-<h3>Лог бота</h3>
-<hr>
+        <strong>{$LANG.sinusdocker_service_deleted}</strong>
+    </span> 
+{/if}
 
-
-<textarea style="display: block;margin: 0 auto;font-size: 11px;" rows="10" cols="140" name="text" disabled> {$logs}</textarea>
+{if $status eq {$LANG.clientareasuspended}} 
+    <br><br>
+    <span style="padding:2px 10px;background-color:#cc0000;color:#fff;text-align: center;display: block;margin: 0 auto;width: 400px;height: 100%;">
+        <strong>{$LANG.sinusdocker_service_suspended}</strong><br/>
+        <strong>   {$LANG.suspendreason}: {$suspendreason}</strong>
+    </span> 
+{/if}
