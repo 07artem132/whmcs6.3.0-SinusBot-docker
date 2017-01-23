@@ -46,29 +46,30 @@ function sinusdocker_MetaData() {
  * @return array
  */
 function sinusdocker_ConfigOptions() {
+    global $_LANG;
     return array(
         'images' => array(
             'Type' => 'text',
             'Size' => '120',
             'Default' => '07artem132/sinusbot:0.9.16-10f0fad',
-            'Description' => '<br>Максимум 120 символов',
+            'Description' => '<br>' . sprintf($_LANG['sinusdocker_maximum_characters'], 120),
         ), 'HTTP proto' => array(
             'Type' => 'dropdown',
             'Options' => array(
                 'http' => 'http',
                 'https' => 'https',
             ),
-            'Description' => '<br>Выбирайте HTTPS если вы используете SSL сертификат для бота',
-        ), 'Префикс контейнера' => array(
+            'Description' => '<br>' . $_LANG['sinusdocker_prefix_to_the_URL_bot'],
+        ), $_LANG['sinusdocker_prefix_container'] => array(
             'Type' => 'text',
             'Size' => '30',
             'Default' => 'billing_',
-            'Description' => 'По умолчанию контейнеры будут иметь имя: billing_ID услуги',
-        ), 'Задержка' => array(
+            'Description' => sprintf($_LANG['sinusdocker_prefix_container_des'], 'billing_' . $_LANG['sinusdocker_id_product']),
+        ), $_LANG['sinusdocker_Delay_before_reading_log'] => array(
             'Type' => 'text',
             'Size' => '1',
             'Default' => '1',
-            'Description' => 'По умолчанию после запуска контейнера скрипт будет ждать 1 секунду перед тем как будет извлекать пароль (это необходимо потому как бот стартует дольше чем выполняется php скрипт)',
+            'Description' => $_LANG['sinusdocker_Delay_before_reading_log_des'],
     ));
 }
 
@@ -361,9 +362,9 @@ function sinusdocker_ClientArea(array $params) {
         $shipyard = new shipyard();
 
         //  получаем токен
-         $token = $shipyard->autn($serverusername, $serverpassword, $url);
+        $token = $shipyard->autn($serverusername, $serverpassword, $url);
         //получаем лог для извлечения пароля 
-           $logs = $shipyard->containerslogs($params['customfields']['id container'], $serverusername, $token, $url);
+        $logs = $shipyard->containerslogs($params['customfields']['id container'], $serverusername, $token, $url);
         return array(
             'tabOverviewReplacementTemplate' => $templateFile,
             'templateVariables' => array(
